@@ -1,0 +1,14 @@
+package com.example.poc.employee.dao;
+
+import javax.transaction.Transactional;
+
+import org.springframework.stereotype.Repository;
+
+@Repository
+@Transactional
+public class DataTableColumnDao {
+
+	public List<AvaliableColumnDto> getAvaliableColumnInfo(){
+		
+	}
+}

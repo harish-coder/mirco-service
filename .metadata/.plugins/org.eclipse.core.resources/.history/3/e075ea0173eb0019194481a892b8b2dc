@@ -1,0 +1,17 @@
+package com.data.table.client.projection;
+
+import java.util.List;
+
+public class IncDataTableDto {
+
+	private List<String> avaliableColumn;
+
+	private List<String> visibleColumn;
+
+	private List<IncidentDto> incident;
+
+	
+
+	
+	
+}

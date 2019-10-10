@@ -1,0 +1,6 @@
+package com.example.poc.employee.projection;
+
+public class VisibleColumnDto {
+
+	private String columnName;
+}

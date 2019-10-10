@@ -1,0 +1,28 @@
+package com.example.poc.employee.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.poc.employee.entity.EmployeeEntity;
+import com.example.poc.employee.projection.EmployeeDto;
+import com.example.poc.employee.service.EmployeeService;
+
+@RestController
+public class EmployeeController {
+
+	@Autowired
+	private EmployeeService employeeService;
+
+	@CrossOrigin
+	@GetMapping(path ="/employee")
+	public ResponseEntity<List<EmployeeDto>> getAllEmpDetails(){
+		List<EmployeeDto> employeeEntities = employeeService.getAllEmpDetails();
+		return new ResponseEntity<List<EmployeeDto>>(employeeEntities, HttpStatus.OK);
+	}
+}

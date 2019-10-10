@@ -1,0 +1,362 @@
+package com.renault.dmm.common;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.math.BigDecimal;
+import java.nio.charset.Charset;
+import java.sql.Date;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.TimeZone;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.renault.dmm.dto.ModalProjection;
+
+public class Util {
+
+    private static final Log LOG = LogFactory.getLog(Util.class);
+
+	private Util() {
+	}
+	
+	/**
+	 * @param collection
+	 *            a collection
+	 * @return true if the collection is neither null nor empty, otherwise false
+	 */
+	public static boolean isNeitherNullNorEmpty(Collection<?> collection) {
+		return !isNullOrEmpty(collection);
+	}
+
+	/**
+	 * @param map
+	 *            a map
+	 * @return true if the map is neither null nor empty, otherwise false
+	 */
+	public static boolean isNeitherNullNorEmpty(Map<?, ?> map) {
+		return !isNullOrEmpty(map);
+	}
+
+	/**
+	 * @param array
+	 *            an array
+	 * @return true if the array is neither null nor has length of 0, otherwise
+	 *         false
+	 */
+	public static boolean isNeitherNullNorEmpty(Object[] array) {
+		return !isNullOrEmpty(array);
+	}
+
+	/**
+	 * @param string
+	 *            a string
+	 * @return true if the string is not null and has non-whitespace length at least
+	 *         one, else false
+	 */
+	public static boolean isNeitherNullNorEmpty(String string) {
+		return string != null && string.trim().length() > 0;
+	}
+
+	/**
+	 * @param collection
+	 *            a collection
+	 * @return true if the collection is null or empty, otherwise false
+	 */
+	public static boolean isNullOrEmpty(Collection<?> collection) {
+		return collection == null || collection.isEmpty();
+	}
+
+	/**
+	 * @param map
+	 *            a map
+	 * @return true if the map is null or empty, otherwise false
+	 */
+	public static boolean isNullOrEmpty(Map<?, ?> map) {
+		return (map == null || map.isEmpty());
+	}
+
+	/**
+	 * @param array
+	 *            an array of objects
+	 * @return true if the array is null or has length of 0, otherwise false
+	 */
+	public static boolean isNullOrEmpty(Object[] array) {
+		return (array == null || array.length == 0);
+	}
+
+	/**
+	 * If - the given String is null - or equal to the empty String - or contains
+	 * only spaces returns true.
+	 * 
+	 * If the String has non-space content, returns false.
+	 * 
+	 * Useful for parameter checking in requests and elsewhere.
+	 * 
+	 * @param target
+	 * @return boolean
+	 */
+	public static boolean isNullOrEmpty(String target) {
+		return (null == target || StringUtils.isEmpty(target.trim()));
+	}
+	
+	/**
+	 * If - the given String is null - or equal to the empty String - or contains
+	 * only spaces returns true.
+	 * 
+	 * If the String has non-space content, returns false.
+	 * 
+	 * Useful for parameter checking in requests and elsewhere.
+	 * 
+	 * @param genericSearchCriteria
+	 * @return boolean
+	 */
+	public static String getSearchString(GenericSearchCriteria genericSearchCriteria){
+		String searchString = "";
+		if(!StringUtils.isEmpty(genericSearchCriteria.getSearchString())){
+			searchString = searchString+ "'%"+genericSearchCriteria.getSearchString().toLowerCase()+"%'";
+			return searchString;
+		}
+		return searchString+ "'%%'";
+	}
+	
+	public static Date getCurrentDate()
+	{
+		Calendar calendar = Calendar.getInstance();
+		return new Date(calendar.getTime().getTime());
+	}
+	
+	public static java.util.Date dateTimeConvertor(String dateTime)
+	{
+		String[] dateConvertor =dateTime.split("-");
+		String[] timeConvertor =dateTime.split(":");
+		String replceWhiteSpace=timeConvertor[0].replaceAll(" ", "");
+		int year =Integer.parseInt(dateConvertor[0]);
+		int month = Integer.parseInt(dateConvertor[1]);
+		int day = Integer.parseInt(dateConvertor[2].replaceAll(" ", "").substring(0, 2));
+		int hour =Integer.parseInt(replceWhiteSpace.substring(replceWhiteSpace.length()-2, replceWhiteSpace.length()));
+		int minute=Integer.parseInt(timeConvertor[1]);
+		int second = Integer.parseInt(timeConvertor[2].replaceAll(" ", "").substring(0, 2));
+		return Util.getDate(year, month, day, hour, minute, second);
+	}
+	
+	
+	public static java.util.Date getDate(int year, int month, int day, int hour, int minute, int second) {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.YEAR, year);
+        cal.set(Calendar.MONTH, month);
+        cal.set(Calendar.DAY_OF_MONTH, day);
+        cal.set(Calendar.HOUR_OF_DAY, hour);
+        cal.set(Calendar.MINUTE, minute);
+        cal.set(Calendar.SECOND, second);
+        cal.set(Calendar.MILLISECOND, 0);
+        return cal.getTime();
+    }
+	
+    /**
+    * convert your date as per given time zone
+    * 
+     * @param date
+    * @param timeZone
+    * @return
+    */
+    public static String getTimeStampForTimeZone(java.util.Date date, String timeZone) {
+		 
+		DateFormat df = new SimpleDateFormat(GenericConstants.DATE_PATTEN);
+		// Tell the DateFormat that I want to show the date in the IST timezone
+		df.setTimeZone(TimeZone.getTimeZone(timeZone));
+		return df.format(date);
+    }
+    
+    public static String removedTimeZone(String dateTime){
+    	
+    	 return dateTime.substring(GenericConstants.ZERO, dateTime.length() - GenericConstants.TWO);
+    }
+    
+    public static String dateFormatter(String dateTime){
+        java.util.Date date= null;
+        try {
+            date = new SimpleDateFormat(GenericConstants.DEFAULT_DATE_FORMAT).parse(dateTime);
+        } catch (ParseException e) {
+            LOG.error(e.getMessage());
+        }
+        SimpleDateFormat hqlDateFormatter = new SimpleDateFormat(GenericConstants.HQL_DATE_FORMAT);
+	    return hqlDateFormatter.format(date);
+    }
+    
+    
+    /**
+     * Language Translator
+     * 
+     * @param key
+     * @param lang
+     * @return
+     */
+    public static String languageTranslator(String key,String lang) {
+		Properties prop = new Properties();
+		String filePath = "";
+		Reader reader = null;
+		try {
+
+			InputStream inputStream = Util.class.getClassLoader().getResourceAsStream(lang+".properties");
+			if(GenericConstants.PORTUGAL.equals(lang)) {
+				reader = new InputStreamReader(inputStream, Charset.forName("ISO-8859-1"));
+			}else {
+				reader = new InputStreamReader(inputStream, Charset.forName("UTF-8"));
+			}
+			
+			prop.load(reader);
+			filePath = prop.getProperty(key);
+
+		} catch (IOException e) {
+			LOG.error(e.getMessage());
+		}
+
+    	return filePath;
+	}
+
+    /**
+     * Remove Time form the given date
+     * @param date
+     * @return
+     * @throws ParseException 
+     */
+    public static java.util.Date removeTime(String date) throws ParseException {
+    	SimpleDateFormat dateFormat=new SimpleDateFormat(GenericConstants.HEUR_CONSTANT_PATTERN);
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(dateFormat.parse(date));
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        return new java.util.Date(cal.getTimeInMillis());
+    }
+    
+    /**
+     *  
+     * @param lang
+     * @param aliasName
+     * @return
+     */
+    
+    public static String translationQuery(String lang,String aliasName) {
+    	StringBuilder query=new StringBuilder();
+    	query.append("("+aliasName+".idLabel NOT IN ");
+    	query.append("(select "+aliasName+".idLabel from Label18NEntity "+aliasName+" where "+aliasName+".labelLang = '"+lang+"')"
+    			+ " and ("+aliasName+".labelLang='fr') "
+    			+ " or (UPPER("+aliasName+".labelLang)=UPPER('"+lang+"')))");
+    	return query.toString();
+    }
+    
+    /**
+     * 
+     * @param idRole
+     * 0 = Value
+     * 1 = priority 
+     * @return
+     * @throws IOException
+     */
+    
+    public static String getRole(int idRole,int type) throws IOException {
+		Properties prop = new Properties();
+		InputStream input = Util.class.getClassLoader().getResourceAsStream("dmm.properties");
+		prop.load(input);
+		String[] splitRoles=prop.getProperty(idRole + StringUtils.EMPTY).split(GenericConstants.USERIPNS_SPLIT);
+		return splitRoles[type];
+	}
+    
+    /**
+     * 
+     * @param processCode
+     * @return
+     */
+    public static String getProcessByValue(Integer processCode) {
+    	HashMap<Integer, String> process =new HashMap<>();
+    	process.put(GenericConstants.ASSEMBLY, GenericConstants.ASSEMBLY_VALUE);
+    	process.put(GenericConstants.MACHINING, GenericConstants.MACHINING_VALUE);
+    	process.put(GenericConstants.FOUNDRY, GenericConstants.FOUNDRY_VALUE);
+    	process.put(GenericConstants.SOLDERING, GenericConstants.SOLDERING_VALUE);
+    	return process.get(processCode);
+    }
+ 
+    /**
+     * 
+     * @param shiftCode
+     * @return
+     */
+    public static String getShiftValue(Integer shiftCode) {
+    	HashMap<Integer, String> shift =new HashMap<>();
+    	shift.put(GenericConstants.ASCENDING, GenericConstants.ASCENDING_VALUE);
+    	shift.put(GenericConstants.DESCENDING, GenericConstants.DESCENDING_VALUE);
+    	return shift.get(shiftCode);
+    }
+    
+    /**
+     * 
+     * @return
+     */
+	public static int getCurrentYear() {
+		return Calendar.getInstance().get(Calendar.YEAR);
+	}
+	
+	/**
+	 *  
+	 * @param list
+	 * @return only the code based on the given list 
+	 */
+	
+	public static List<String> getCode(List<ModalProjection> list){
+		List<String> code = new ArrayList<String>();
+		if(!CollectionUtils.isEmpty(list)) {
+			code = list.stream().map(p->p.getCode()).collect(Collectors.toList());
+		}
+	  return code;	
+	}
+	
+	
+	/**
+	 * 
+	 * @param transCoordinate
+	 * @return
+	 */
+	public static BigDecimal convertArrowCoordinate(String transCoordinate) {
+		
+		return new BigDecimal(transCoordinate.substring(GenericConstants.ZERO, transCoordinate.length() - GenericConstants.ONE));
+	}
+	
+	/**
+	 * 
+	 * @param projections
+	 * @return
+	 */
+	public static List<String> getLineCode(List<ModalProjection> projections){
+		
+		return projections.stream().collect(Collectors.mapping(p -> p.getCode().split(GenericConstants.LINE_OP_SPLIT)[GenericConstants.ZERO], Collectors.toList()));
+	}
+	
+	/**
+	 * 
+	 * @param projections
+	 * @return
+	 */
+	public static List<String> getOpCode(List<ModalProjection> projections){
+		
+		return projections.stream().collect(Collectors.mapping(p -> p.getCode().split(GenericConstants.LINE_OP_SPLIT)[GenericConstants.ONE], Collectors.toList()));
+	}
+	
+	
+}

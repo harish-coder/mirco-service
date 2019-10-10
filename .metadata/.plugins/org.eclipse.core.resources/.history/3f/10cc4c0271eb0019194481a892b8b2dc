@@ -1,0 +1,5 @@
+package com.example.poc.incident.service;
+
+public class IncidentService {
+
+}

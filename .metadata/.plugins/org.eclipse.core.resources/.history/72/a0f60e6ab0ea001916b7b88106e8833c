@@ -1,0 +1,38 @@
+package com.example.poc.employee.projection;
+
+import java.util.List;
+
+public class EmpDataTableDto {
+
+	private List<AvaliableColumnDto> avaliableColumn;
+	
+	private List<VisibleColumnDto> visibleColumn;
+	
+	private List<EmployeeDto> employee;
+
+	public List<AvaliableColumnDto> getAvaliableColumn() {
+		return avaliableColumn;
+	}
+
+	public void setAvaliableColumn(List<AvaliableColumnDto> avaliableColumn) {
+		this.avaliableColumn = avaliableColumn;
+	}
+
+	public List<VisibleColumnDto> getVisibleColumn() {
+		return visibleColumn;
+	}
+
+	public void setVisibleColumn(List<VisibleColumnDto> visibleColumn) {
+		this.visibleColumn = visibleColumn;
+	}
+
+	public List<EmployeeDto> getEmployee() {
+		return employee;
+	}
+
+	public void setEmployee(List<EmployeeDto> employee) {
+		this.employee = employee;
+	}
+	
+	
+}

@@ -30,7 +30,7 @@ public class ClientController {
 	@PostMapping(path = "/employee/info")
 	public ResponseEntity<EmpDataTableDto> getEmployeeInfo(@RequestBody GenericSearchCriteria genericSearchCriteria){
 		
-		EmpDataTableDto dataTableDto = webClientBuilder.build().post().uri("http://localhost:8081/employee")
+		EmpDataTableDto dataTableDto = webClientBuilder.build().post().uri("http://employee-data-service/employee")
 		.body(Mono.just(genericSearchCriteria), GenericSearchCriteria.class)
         .retrieve()
         .bodyToMono(EmpDataTableDto.class).block();
@@ -43,7 +43,7 @@ public class ClientController {
 	@PostMapping(path = "/incident/info")
 	public ResponseEntity<IncDataTableDto> getIncidentInfo(@RequestBody GenericSearchCriteria genericSearchCriteria){
 		
-		IncDataTableDto dataTableDto = webClientBuilder.build().post().uri("http://localhost:8082/incident")
+		IncDataTableDto dataTableDto = webClientBuilder.build().post().uri("http://incident-data-service/incident")
 		.body(Mono.just(genericSearchCriteria), GenericSearchCriteria.class)
         .retrieve()
         .bodyToMono(IncDataTableDto.class).block();

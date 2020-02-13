@@ -12,6 +12,7 @@ import com.example.poc.incident.constant.GenericSearchCriteria;
 import com.example.poc.incident.projection.IncDataTableDto;
 import com.example.poc.incident.service.IncidentService;
 
+
 @RestController
 public class IncidentController {
 

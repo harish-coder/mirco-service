@@ -1,5 +1,0 @@
-package com.example.poc.employee.projection;
-
-public class EmployeeDto {
-
-}
